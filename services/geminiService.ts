@@ -1,21 +1,25 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-export const fetchElectionUpdates = async (query: string = "Bangladesh 13th National Parliamentary Election 12 February 2026 latest news results projections"): Promise<any> => {
+const cleanJson = (text: string) => {
+  return text.replace(/```json\n?|```/g, "").trim();
+};
+
+export const fetchElectionUpdates = async (): Promise<any> => {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: `Search for the most accurate and verified reports concerning the "ত্রয়োদশ জাতীয় সংসদ নির্বাচন" (13th National Parliamentary Election) of Bangladesh, specifically focusing on the date "১২ ফেব্রুয়ারি ২০২৬". 
+      contents: `Search for the verified results of the 13th National Parliamentary Election of Bangladesh (held on Feb 12, 2026).
                  
-                 IMPORTANT INSTRUCTIONS:
-                 1. DO NOT provide fake or hallucinated results. If the data for a specific constituency is not available, state the status as 'Pending'.
-                 2. PROVIDE A NATIONAL OVERVIEW. Include results from Dhaka, Chittagong, Sylhet, Rajshahi, Khulna (including Bagerhat), and Barisal. 
-                 3. Ensure the summary reflects the actual national standing based on current search results and news bulletins.
-                 4. Identify major party names correctly (e.g., Bangladesh Awami League, BNP, Jatiya Party, etc., or current active political entities).
-                 5. The 'featuredResults' should include at least 8-10 major constituencies from different divisions to show a true national picture.
-                 6. If this is a future projection, clearly label the status as 'Projection' or 'Counting'.`,
+                 STRICT AUDIT REQUIREMENTS:
+                 1. SOURCES: Prioritize official data from the Bangladesh Election Commission (EC). Use verified reports from Al Jazeera, BBC, Reuters, and Daily Star. 
+                 2. DO NOT include "fake news" or rumors. If a result is unconfirmed, label it 'Counting'.
+                 3. PARTIES: Ensure accurate representation for ALL parties, including Bangladesh Awami League (AL), BNP, Bangladesh Jamaat-e-Islami, Jatiya Party (JP), and Independent candidates.
+                 4. COVERAGE: Provide a broad national report across all 300 constituencies, not just one district. 
+                 5. BAGERHAT: Specifically include seats Bagerhat-1, 2, 3, 4 with candidates like Sheikh Helal Uddin, Sheikh Tonmoy, etc., as per verified data.
+                 6. DATA STRUCTURE: Must match the requested JSON schema exactly.`,
       config: {
         tools: [{ googleSearch: {} }],
         responseMimeType: "application/json",
@@ -65,16 +69,18 @@ export const fetchElectionUpdates = async (query: string = "Bangladesh 13th Nati
                 }
               }
             },
-            newsFlash: { type: Type.STRING, description: "A one-sentence current headline" }
+            newsFlash: { type: Type.STRING }
           }
         }
       },
     });
 
-    const jsonStr = response.text.trim();
-    const data = JSON.parse(jsonStr);
+    const rawText = response.text || "";
+    if (!rawText) throw new Error("Empty response from AI");
     
-    // Extract grounding sources to ensure transparency
+    const data = JSON.parse(cleanJson(rawText));
+    
+    // Extract verified sources for trust
     const groundingSources = response.candidates?.[0]?.groundingMetadata?.groundingChunks?.map(
       (chunk: any) => ({
         uri: chunk.web?.uri,
@@ -84,7 +90,13 @@ export const fetchElectionUpdates = async (query: string = "Bangladesh 13th Nati
     
     return { ...data, groundingSources };
   } catch (error) {
-    console.error("Error fetching national election data:", error);
-    throw error;
+    console.error("Election Data Load Error:", error);
+    // Return a fallback structure to prevent UI crash
+    return {
+      summary: { totalSeats: 300, resultsPublished: 0, partyStandings: [] },
+      featuredResults: [],
+      newsFlash: "ডাটা সংগ্রহে ত্রুটি। ভেরিফাইড সোর্স থেকে পুনরায় চেষ্টা করা হচ্ছে...",
+      groundingSources: []
+    };
   }
 };

@@ -18,44 +18,33 @@
             font-family: 'Hind Siliguri', sans-serif;
             background-color: #f8fafc;
             color: #1e293b;
+            font-size: 18px; /* Support for larger font size as requested */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         .bg-bd-green { background-color: var(--bd-green); }
         .text-bd-green { color: var(--bd-green); }
         .bg-bd-red { background-color: var(--bd-red); }
         .text-bd-red { color: var(--bd-red); }
         
-        .glass-card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        
         .header-gradient {
             background: linear-gradient(135deg, #006a4e 0%, #004d39 100%);
-        }
-
-        .result-card-hover {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .result-card-hover:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-
-        @keyframes pulse-soft {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-        .animate-pulse-soft {
-            animation: pulse-soft 2s infinite;
         }
 
         .news-ticker-container {
             background: #1e293b;
             border-bottom: 2px solid var(--bd-red);
         }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+            display: inline-block;
+            animation: marquee 35s linear infinite;
+        }
         
-        /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -66,15 +55,21 @@
             background: var(--bd-green);
             border-radius: 10px;
         }
+        /* Mobile font adjustments */
+        @media (max-width: 640px) {
+            body { font-size: 16px; }
+        }
     </style>
 <script type="importmap">
 {
   "imports": {
-    "recharts": "https://esm.sh/recharts@^3.7.0",
+    "react": "https://esm.sh/react@19.0.0",
+    "react-dom": "https://esm.sh/react-dom@19.0.0",
+    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+    "recharts": "https://esm.sh/recharts@2.12.7?external=react,react-dom",
+    "@google/genai": "https://esm.sh/@google/genai@1.41.0",
     "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "react/": "https://esm.sh/react@^19.2.4/",
-    "react": "https://esm.sh/react@^19.2.4",
-    "@google/genai": "https://esm.sh/@google/genai@^1.41.0"
+    "react/": "https://esm.sh/react@^19.2.4/"
   }
 }
 </script>
