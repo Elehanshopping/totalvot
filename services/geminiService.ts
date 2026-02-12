@@ -11,15 +11,16 @@ export const fetchElectionUpdates = async (): Promise<any> => {
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: `Search for and analyze the latest reports from this specific URL: https://www.hindustantimes.com/world-news/bangladesh-election-2026-live-updates-voting-results-bnp-tarique-rahman-jamaat-sheikh-hasina-yunus-parliamentary-dhaka-101770854350046.html
+      contents: `Search for and analyze the latest reports from this specific URL: https://election.somoynews.tv/results
                  
                  STRICT AUDIT & EXTRACTION REQUIREMENTS:
-                 1. PRIMARY SOURCE: Use the live coverage from Hindustan Times linked above for real-time seat counts, party leads, and breaking updates for the 13th Bangladesh Parliamentary Election.
+                 1. PRIMARY SOURCE: Use the Somoy News Election portal linked above for real-time seat counts, party leads, and breaking updates for the 13th Bangladesh Parliamentary Election.
                  2. SECONDARY VERIFICATION: Cross-reference with the Bangladesh Election Commission (EC) to ensure zero hallucination.
                  3. PARTIES: Report on BNP, Jamaat-e-Islami, Jatiya Party, Awami League, and Independents.
-                 4. SCOPE: Provide national summary and featured results for major seats (Dhaka-10, Bagerhat-1,2,3,4, Chittagong, etc.).
-                 5. NO HALLUCINATION: If the specific URL does not have data for a seat yet, mark it as 'Pending' or 'Counting'.
-                 6. DATA STRUCTURE: Must strictly follow the JSON schema provided.`,
+                 4. SCOPE: Provide national summary and featured results for major seats across all divisions (Dhaka, Chittagong, Khulna, Rajshahi, Barisal, Sylhet, Rangpur, Mymensingh).
+                 5. SPECIFIC SEATS: Ensure Bagerhat-1, 2, 3, and 4 results are explicitly searched for and included if available.
+                 6. NO HALLUCINATION: If the specific URL does not have data for a seat yet, mark it as 'Pending' or 'Counting'.
+                 7. DATA STRUCTURE: Must strictly follow the JSON schema provided.`,
       config: {
         tools: [{ googleSearch: {} }],
         responseMimeType: "application/json",
@@ -80,7 +81,7 @@ export const fetchElectionUpdates = async (): Promise<any> => {
     
     const data = JSON.parse(cleanJson(rawText));
     
-    // Extract verified sources for trust, specifically looking for the Hindustan Times link
+    // Extract verified sources for trust, specifically looking for the Somoy News link
     const groundingSources = response.candidates?.[0]?.groundingMetadata?.groundingChunks?.map(
       (chunk: any) => ({
         uri: chunk.web?.uri,
@@ -95,7 +96,7 @@ export const fetchElectionUpdates = async (): Promise<any> => {
     return {
       summary: { totalSeats: 300, resultsPublished: 0, partyStandings: [] },
       featuredResults: [],
-      newsFlash: "Hindustan Times লাইভ সোর্স থেকে ডাটা লোড হচ্ছে না। পুনরায় চেষ্টা করা হচ্ছে...",
+      newsFlash: "Somoy News লাইভ সোর্স থেকে ডাটা লোড হতে বিলম্ব হচ্ছে। পুনরায় চেষ্টা করা হচ্ছে...",
       groundingSources: []
     };
   }
