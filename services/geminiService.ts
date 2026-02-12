@@ -11,15 +11,15 @@ export const fetchElectionUpdates = async (): Promise<any> => {
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: `Search for the verified results of the 13th National Parliamentary Election of Bangladesh (held on Feb 12, 2026).
+      contents: `Search for and analyze the latest reports from this specific URL: https://www.hindustantimes.com/world-news/bangladesh-election-2026-live-updates-voting-results-bnp-tarique-rahman-jamaat-sheikh-hasina-yunus-parliamentary-dhaka-101770854350046.html
                  
-                 STRICT AUDIT REQUIREMENTS:
-                 1. SOURCES: Prioritize official data from the Bangladesh Election Commission (EC). Use verified reports from Al Jazeera, BBC, Reuters, and Daily Star. 
-                 2. DO NOT include "fake news" or rumors. If a result is unconfirmed, label it 'Counting'.
-                 3. PARTIES: Ensure accurate representation for ALL parties, including Bangladesh Awami League (AL), BNP, Bangladesh Jamaat-e-Islami, Jatiya Party (JP), and Independent candidates.
-                 4. COVERAGE: Provide a broad national report across all 300 constituencies, not just one district. 
-                 5. BAGERHAT: Specifically include seats Bagerhat-1, 2, 3, 4 with candidates like Sheikh Helal Uddin, Sheikh Tonmoy, etc., as per verified data.
-                 6. DATA STRUCTURE: Must match the requested JSON schema exactly.`,
+                 STRICT AUDIT & EXTRACTION REQUIREMENTS:
+                 1. PRIMARY SOURCE: Use the live coverage from Hindustan Times linked above for real-time seat counts, party leads, and breaking updates for the 13th Bangladesh Parliamentary Election.
+                 2. SECONDARY VERIFICATION: Cross-reference with the Bangladesh Election Commission (EC) to ensure zero hallucination.
+                 3. PARTIES: Report on BNP, Jamaat-e-Islami, Jatiya Party, Awami League, and Independents.
+                 4. SCOPE: Provide national summary and featured results for major seats (Dhaka-10, Bagerhat-1,2,3,4, Chittagong, etc.).
+                 5. NO HALLUCINATION: If the specific URL does not have data for a seat yet, mark it as 'Pending' or 'Counting'.
+                 6. DATA STRUCTURE: Must strictly follow the JSON schema provided.`,
       config: {
         tools: [{ googleSearch: {} }],
         responseMimeType: "application/json",
@@ -80,7 +80,7 @@ export const fetchElectionUpdates = async (): Promise<any> => {
     
     const data = JSON.parse(cleanJson(rawText));
     
-    // Extract verified sources for trust
+    // Extract verified sources for trust, specifically looking for the Hindustan Times link
     const groundingSources = response.candidates?.[0]?.groundingMetadata?.groundingChunks?.map(
       (chunk: any) => ({
         uri: chunk.web?.uri,
@@ -95,7 +95,7 @@ export const fetchElectionUpdates = async (): Promise<any> => {
     return {
       summary: { totalSeats: 300, resultsPublished: 0, partyStandings: [] },
       featuredResults: [],
-      newsFlash: "ডাটা সংগ্রহে ত্রুটি। ভেরিফাইড সোর্স থেকে পুনরায় চেষ্টা করা হচ্ছে...",
+      newsFlash: "Hindustan Times লাইভ সোর্স থেকে ডাটা লোড হচ্ছে না। পুনরায় চেষ্টা করা হচ্ছে...",
       groundingSources: []
     };
   }
