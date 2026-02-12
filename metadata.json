@@ -1,0 +1,7 @@
+{
+  "name": "Bangladesh 13th Election Portal",
+  "description": "A real-time tracking dashboard for the 13th Bangladesh Parliamentary Election results, featuring AI-powered updates and constituency-specific details.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
