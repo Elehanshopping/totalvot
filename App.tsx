@@ -5,6 +5,7 @@ import { ConstituencyResult } from './types';
 import ResultCard from './components/ResultCard';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { Analytics } from '@vercel/analytics/react';
 
 const App: React.FC = () => {
   const [data, setData] = useState<any>(null);
@@ -239,6 +240,7 @@ const App: React.FC = () => {
           </div>
         </div>
       </footer>
+      <Analytics />
     </div>
   );
 };
