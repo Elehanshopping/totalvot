@@ -15,7 +15,7 @@ export const fetchElectionUpdates = async (): Promise<any> => {
                  
                  STRICT AUDIT & EXTRACTION REQUIREMENTS:
                  1. PRIMARY SOURCE: Use the Somoy News Election portal linked above for real-time seat counts, party leads, and breaking updates for the 13th Bangladesh Parliamentary Election.
-                 2. SECONDARY VERIFICATION: Cross-reference with the Bangladesh Election Commission (EC) to ensure zero hallucination.
+                 2. SECONDARY VERIFICATION: Cross-reference with the Bangladesh Election Commission (EC) and other verified international reports like Hindustan Times to ensure zero hallucination.
                  3. PARTIES: Report on BNP, Jamaat-e-Islami, Jatiya Party, Awami League, and Independents.
                  4. SCOPE: Provide national summary and featured results for major seats across all divisions (Dhaka, Chittagong, Khulna, Rajshahi, Barisal, Sylhet, Rangpur, Mymensingh).
                  5. SPECIFIC SEATS: Ensure Bagerhat-1, 2, 3, and 4 results are explicitly searched for and included if available.
@@ -81,7 +81,7 @@ export const fetchElectionUpdates = async (): Promise<any> => {
     
     const data = JSON.parse(cleanJson(rawText));
     
-    // Extract verified sources for trust, specifically looking for the Somoy News link
+    // Extract verified sources for trust
     const groundingSources = response.candidates?.[0]?.groundingMetadata?.groundingChunks?.map(
       (chunk: any) => ({
         uri: chunk.web?.uri,
